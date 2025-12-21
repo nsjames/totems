@@ -1,0 +1,7 @@
+.idea
+.env
+build/
+bun.lock
+node_modules/
+.validator_contract
+.DS_Store
