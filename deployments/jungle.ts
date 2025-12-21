@@ -43,6 +43,8 @@ const deployMarket = async () => {
 }
 
 (async() => {
-    await deployTotems();
-    await deployMarket();
+    await Promise.all([
+        deployTotems(),
+        deployMarket()
+    ]);
 })();

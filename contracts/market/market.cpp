@@ -94,6 +94,55 @@ void market::update(const name& contract, const uint64_t& price, const totems::M
 }
 
 
+market::GetModsResult market::getmods(const std::vector<name>& contracts) {
+	mods_table mods(get_self(), get_self().value);
+	GetModsResult result;
+
+	for (const auto& contract : contracts) {
+		auto mod = mods.find(contract.value);
+		if (mod != mods.end()) {
+			result.mods.push_back(*mod);
+		}
+	}
+
+	return result;
+}
+
+market::GetModsResult market::listmods(const uint32_t& per_page, const std::optional<name>& cursor) {
+	mods_table mods(get_self(), get_self().value);
+	GetModsResult result;
+
+	// use lower bounds for cursor, or just beginning if not provided
+	// (+1 if using cursor to avoid including the cursor item itself)
+	auto mod_itr = mods.begin();
+    if (cursor.has_value()) {
+        mod_itr = mods.lower_bound(cursor->value);
+        if (mod_itr != mods.end()) {
+            ++mod_itr;
+        }
+    }
+
+	uint32_t count = 0;
+	while (mod_itr != mods.end() && count < per_page) {
+		result.mods.push_back(*mod_itr);
+		result.cursor = mod_itr->contract;
+		++mod_itr;
+		++count;
+	}
+
+	result.has_more = mod_itr != mods.end();
+
+	return result;
+}
+
+
+
+
+
+
+
+
+
 
 std::vector RESTRICTED_CORE_ACTIONS = {
 	"updateauth"_n,

@@ -226,6 +226,12 @@ void totemtoken::burn(const name& owner, const asset& quantity, const string& me
 //         row.max_supply -= quantity;
     });
 
+    // backwards compat
+    stat_table statstable(get_self(), quantity.symbol.code().raw());
+    statstable.modify(statstable.get(quantity.symbol.code().raw()), same_payer, [&](auto& s) {
+	   s.supply -= quantity;
+	});
+
     totemstats_table totemstats(get_self(), get_self().value);
     auto stats = totemstats.find(totem->supply.symbol.code().raw());
     check(stats != totemstats.end(), "Totem stats not found");
@@ -360,6 +366,14 @@ void totemtoken::close(const name& owner, const symbol& ticker) {
     notify_mods(totem.mods.close);
 }
 
+void totemtoken::notify_mods(const std::vector<name>& mods) {
+    for (const auto& mod : mods) {
+        require_recipient(mod);
+    }
+}
+
+
+// READ ONLY
 uint64_t totemtoken::getfee(const std::vector<name> mods){
 	uint64_t mod_fees = 0;
 	for (const auto& mod_name : mods) {
@@ -371,8 +385,68 @@ uint64_t totemtoken::getfee(const std::vector<name> mods){
     return mod_fees + shared::TOTEM_CREATION_BASE_FEE;
 }
 
-void totemtoken::notify_mods(const std::vector<name>& mods) {
-    for (const auto& mod : mods) {
-        require_recipient(mod);
-    }
+totemtoken::GetTotemsResult totemtoken::gettotems(const std::vector<symbol_code>& tickers){
+	totems_table totems(get_self(), get_self().value);
+	GetTotemsResult result;
+	for(const auto& code : tickers){
+		auto it = totems.find(code.raw());
+		if(it != totems.end()){
+			result.totems.push_back(*it);
+		}
+	}
+	return result;
+}
+
+totemtoken::GetTotemsResult totemtoken::listtotems(const uint32_t& per_page, const std::optional<uint64_t>& cursor){
+	totems_table totems(get_self(), get_self().value);
+	GetTotemsResult result;
+
+	auto totem_itr = totems.begin();
+	if(cursor.has_value()){
+		totem_itr = totems.find(cursor.value());
+		if(totem_itr != totems.end()){
+			++totem_itr;
+		}
+	}
+
+	uint32_t count = 0;
+	while(totem_itr != totems.end() && count < per_page){
+		result.totems.push_back(*totem_itr);
+		result.cursor = totem_itr->max_supply.symbol.code().raw();
+		++totem_itr;
+		++count;
+	}
+
+	result.has_more = totem_itr != totems.end();
+	return result;
+}
+
+totemtoken::GetBalancesResult totemtoken::getbalances(const std::vector<name>& accounts, const std::vector<symbol_code>& tickers){
+	GetBalancesResult result;
+
+	for(const auto& account : accounts){
+		balances_table balances(get_self(), account.value);
+		if(tickers.size() == 0){
+            auto bal_iter = balances.begin();
+            while(bal_iter != balances.end()){
+                result.balances.push_back(AccountBalance{
+                    .account = account,
+                    .balance = bal_iter->balance
+                });
+                ++bal_iter;
+            }
+        } else {
+            for(const auto& code : tickers){
+                auto it = balances.find(code.raw());
+                if(it != balances.end()){
+                    result.balances.push_back(AccountBalance{
+                        .account = account,
+                        .balance = it->balance
+                    });
+                }
+            }
+        }
+	}
+
+	return result;
 }

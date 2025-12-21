@@ -103,7 +103,36 @@ class [[eosio::contract("totems")]] totemtoken : public contract {
     [[eosio::action, eosio::read_only]]
     uint64_t getfee(const std::vector<name> mods);
 
-	// TODO: Add read-only actions to get totem details, balances, etc.
+	struct GetTotemsResult {
+		std::vector<totems::Totem> totems;
+		uint64_t cursor;
+		bool has_more;
+	};
+
+	[[eosio::action, eosio::read_only]]
+	GetTotemsResult gettotems(const std::vector<symbol_code>& tickers);
+
+	/***
+	  * Lists totems with pagination
+	  * @param per_page - The number of totems to return per page
+	  * @param cursor - An optional cursor to continue listing from (a totem's symbol code raw value)
+	  */
+	[[eosio::action, eosio::read_only]]
+	GetTotemsResult listtotems(const uint32_t& per_page, const std::optional<uint64_t>& cursor);
+
+	struct AccountBalance {
+		name account;
+		asset balance;
+	};
+
+	struct GetBalancesResult {
+		std::vector<AccountBalance> balances;
+		name cursor;
+		bool has_more;
+	};
+
+	[[eosio::action, eosio::read_only]]
+	GetBalancesResult getbalances(const std::vector<name>& accounts, const std::vector<symbol_code>& tickers);
 
 	/***
 	  * Converts all EOS sent to this contract directly to $A so that it only has to deal with one token internally

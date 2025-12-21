@@ -47,7 +47,17 @@ class [[eosio::contract("market")]] market : public contract {
     [[eosio::action]]
     void update(const name& contract, const uint64_t& price, const totems::ModDetails& details);
 
-    // TODO: Add read-only actions to fetch mods, list mods, etc.
+    struct GetModsResult {
+		std::vector<totems::Mod> mods;
+		name cursor;
+		bool has_more;
+	};
+
+    [[eosio::action, eosio::read_only]]
+    GetModsResult getmods(const std::vector<name>& contracts);
+
+    [[eosio::action, eosio::read_only]]
+    GetModsResult listmods(const uint32_t& per_page, const std::optional<name>& cursor);
 
 	// Converts all EOS sent to this contract directly to $A so that it only has to deal with one token internally
     [[eosio::on_notify("eosio.token::transfer")]]
