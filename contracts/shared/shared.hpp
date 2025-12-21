@@ -9,8 +9,9 @@ namespace shared {
 
 	static const symbol EOS_SYMBOL = symbol("EOS", 4);
 	static const symbol VAULTA_SYMBOL = symbol("A", 4);
-    static const uint64_t TOTEM_CREATION_BASE_FEE = 100'0000;
-    static const uint64_t MOD_PUBLISH_FEE = 100'0000;
+	// TODO: Make dynamic based on configuration actions
+    static const uint64_t TOTEM_CREATION_BASE_FEE = 1'0000;
+    static const uint64_t MOD_PUBLISH_FEE = 1'0000;
 
 	// Hooks are triggers for on_notify events in mods
 	std::vector<name> VALID_HOOKS = {

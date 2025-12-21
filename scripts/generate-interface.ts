@@ -56,12 +56,21 @@ if (actions.length === 0) {
 }
 
 const handlers = actions
-    .map(
-        ({ name, params }) => `
+    .map(({ name, params }) => {
+        console.log(name);
+        if(name === 'mint'){
+            return `
     [[eosio::on_notify(TOTEMS_${name.toUpperCase()}_NOTIFY)]]
-    void on_${name}(${params});`
-    )
-    .join("\n");
+    void on_${name}(${params});
+    
+    [[eosio::action]]
+    void ${name}(${params});`;
+        }
+
+        return `
+    [[eosio::on_notify(TOTEMS_${name.toUpperCase()}_NOTIFY)]]
+    void on_${name}(${params});`;
+    }).join("\n");
 
 const output = `#pragma once
 
