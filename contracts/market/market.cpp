@@ -56,6 +56,7 @@ void market::publish(
     check(details.summary.size() <= 150, "Mod summary too long");
     check(details.summary.size() >= 10, "Mod summary too short");
 
+	check(hooks.size() > 0, "At least one hook must be specified");
 	for(const auto& hook : hooks){
 	    check(std::find(shared::VALID_HOOKS.begin(), shared::VALID_HOOKS.end(), hook) != shared::VALID_HOOKS.end(),
 	        "Unsupported hook: " + hook.to_string());
