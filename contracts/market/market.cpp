@@ -23,7 +23,7 @@ void market::publish(
 	// their mods after publishing, though perhaps that is acceptable as long as creators (or the totem contract) has a way
 	// to blacklist mods that misbehave and would brick totems.
 
-	check(price > 0, "Price must be positive");
+	check(price >= 0, "Price cannot be negative");
 	check(is_account(contract), "Contract account does not exist");
 	check(get_code_hash(contract) != checksum256(), "No contract deployed at the given account");
 
@@ -55,6 +55,7 @@ void market::publish(
     check(details.name.size() >= 3, "Mod name too short");
     check(details.summary.size() <= 150, "Mod summary too long");
     check(details.summary.size() >= 10, "Mod summary too short");
+    check(details.image.size() > 0, "Mod image required");
 
 	check(hooks.size() > 0, "At least one hook must be specified");
 	for(const auto& hook : hooks){

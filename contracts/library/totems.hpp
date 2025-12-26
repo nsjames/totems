@@ -107,6 +107,8 @@ namespace totems {
 	    // This is used for things like minters so UIs can point users to things like:
 	    // https://website.com/minters/miner/TICKER
 	    std::string website_token_path;
+	    // Whether or not this mod contract is also a minter for totems
+	    bool is_minter = false;
 	};
 
 	// On-chain Mod entry in the market

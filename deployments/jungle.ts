@@ -1,4 +1,4 @@
-import {deployContract} from "../tools/deployer";
+import {addCodePermission, deployContract} from "../tools/deployer";
 import {Chains, Session} from "@wharfkit/session";
 import {WalletPluginPrivateKey} from "@wharfkit/wallet-plugin-privatekey";
 import {TransactPluginResourceProvider} from "@wharfkit/transact-plugin-resource-provider";
@@ -42,9 +42,46 @@ const deployMarket = async () => {
     );
 }
 
+const deployMarketRemover = async () => {
+    const account = 'modsmodsmods';
+    const session = new Session(Object.assign(sessionParams, {
+        actor: account,
+    }));
+
+    await deployContract(
+        session,
+        './build/remover.wasm',
+        './build/remover.abi',
+        account
+    );
+
+    // await session.transact({
+    //     actions: [
+    //         {
+    //             account: account,
+    //             name: 'run',
+    //             authorization: [
+    //                 {
+    //                     actor: account,
+    //                     permission: 'active',
+    //                 },
+    //             ],
+    //             data: {},
+    //         },
+    //     ],
+    // })
+}
+
 (async() => {
     await Promise.all([
+        // addCodePermission(new Session(Object.assign(sessionParams, {
+        //     actor: 'totemstotems',
+        // })), 'totemstotems'),
+        // addCodePermission(new Session(Object.assign(sessionParams, {
+        //     actor: 'modsmodsmods',
+        // })), 'modsmodsmods'),
         deployTotems(),
-        deployMarket()
+        deployMarket(),
+        // deployMarketRemover(),
     ]);
 })();

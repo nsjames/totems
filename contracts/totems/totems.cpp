@@ -14,6 +14,7 @@ void totemtoken::create(
     check(details.name.size() <= 32, "Totem name too long");
     check(details.name.size() >= 3, "Totem name too short");
     check(details.image.size() > 0, "Image required");
+    check(details.description.size() <= 500, "Description too long");
     check(details.seed != checksum256(), "invalid seed");
 
     // TODO: Check global registry instead
@@ -36,16 +37,37 @@ void totemtoken::create(
 		.amount = network_fee
 	});
 
+	std::vector<std::pair<name, totems::Mod>> mod_cache;
+    auto get_cached = [&](const name& mod_name) -> std::optional<totems::Mod> {
+        for (const auto& [k, v] : mod_cache) if (k == mod_name) return v;
+        return std::nullopt;
+    };
+
+    auto cache_mod = [&](const name& mod_name, const totems::Mod& mod) {
+        mod_cache.emplace_back(mod_name, mod);
+    };
+
+    auto get_mod = [&](const name& mod_name) -> std::optional<totems::Mod> {
+        if (auto cached = get_cached(mod_name)) return cached;
+
+        auto mod = totems::get_mod(mod_name);
+        if (mod.has_value()) cache_mod(mod_name, mod.value());
+        return mod;
+    };
+
 	auto iterate_mods = [&](const std::vector<name>& mod_list, const name& hook_name) {
 		for (const auto& mod_name : mod_list) {
-            auto mod = totems::get_mod(mod_name);
+            auto mod = get_mod(mod_name);
             check(mod.has_value(), "Mod is not published in market");
             check(mod.value().has_hook(hook_name), "Mod does not support required hook: " + hook_name.to_string());
-            mod_fees += mod.value().price;
-            disbursements.push_back(shared::FeeDisbursement{
-                .recipient = mod.value().seller,
-                .amount = mod.value().price
-            });
+            auto price = mod.value().price;
+            if(price > 0){
+	            mod_fees += mod.value().price;
+	            disbursements.push_back(shared::FeeDisbursement{
+	                .recipient = mod.value().seller,
+	                .amount = mod.value().price
+	            });
+            }
         }
 	};
 
@@ -79,7 +101,11 @@ void totemtoken::create(
 		// chain up allocation transfers
 		add_balance(alloc.recipient, alloc.quantity, creator, true);
 
-		if(!alloc.is_minter.has_value() || !alloc.is_minter.value()) {
+		if(alloc.is_minter.has_value() && alloc.is_minter.value()) {
+			auto mod = get_mod(alloc.recipient);
+			check(mod.has_value(), "Allocation recipient mod is not published in market: " + alloc.recipient.to_string());
+			check(mod.value().details.is_minter, "Allocation recipient mod is not a minter: " + alloc.recipient.to_string());
+		} else {
 			stats.mints += 1;
 			stats.holders += 1;
 		}
@@ -173,6 +199,10 @@ void totemtoken::mint(const name& mod, const name& minter, const asset& quantity
 	check(found_mod != totem->allocations.end(), "Mod not authorized to mint for this totem");
 	check(found_mod->is_minter.has_value() && found_mod->is_minter.value(), "Mod is not authorized to mint");
 
+	auto modDetails = totems::get_mod(mod);
+	check(modDetails.has_value(), "Mod is not published in market");
+	check(modDetails.value().details.is_minter, "Mod is not a minter");
+
 	action(
         permission_level{get_self(), "active"_n},
         mod,
@@ -255,7 +285,7 @@ void totemtoken::transfer(const name& from, const name& to, const asset& quantit
     check(from != to, "cannot transfer to self");
     check(is_account(to), "to account does not exist");
     check(quantity.is_valid(), "invalid quantity");
-    check(quantity.amount > 0, "must transfer positive quantity");
+    check(quantity.amount > 0, "must transfer positive quantity of " + quantity.symbol.code().to_string());
 
     totems_table totems(get_self(), get_self().value);
     const auto& totem = totems.get(quantity.symbol.code().raw());

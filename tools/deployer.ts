@@ -43,7 +43,7 @@ export const deployContract = async (session:any, wasmPath:string, abiPath:strin
 
     let actions:any = [
         {
-            account: 'eosio',
+            account: 'core.vaulta',
             name: 'setcode',
             data: {
                 account,
@@ -54,7 +54,7 @@ export const deployContract = async (session:any, wasmPath:string, abiPath:strin
             authorization: permissionLevels,
         },
         {
-            account: 'eosio',
+            account: 'core.vaulta',
             name: 'setabi',
             data: {
                 account,
@@ -69,7 +69,7 @@ export const deployContract = async (session:any, wasmPath:string, abiPath:strin
 
     if(ramRequired > 0){
         actions.unshift({
-            account: 'eosio',
+            account: 'core.vaulta',
             name: 'buyrambytes',
             data: {
                 payer: account,
@@ -88,5 +88,48 @@ export const deployContract = async (session:any, wasmPath:string, abiPath:strin
         }
 
         throw err;
+    });
+}
+
+export const addCodePermission = async (session:any, account:string) => {
+    const accountInfo = await session.client.v1.chain.get_account(account);
+    const permissions = accountInfo.permissions;
+    const activePermission = permissions.find((perm: any) => perm.perm_name.toString() === 'active');
+    const hasCodePermission = activePermission.required_auth.accounts.some((auth: any) => auth.permission.actor === account && auth.permission.permission === 'eosio.code');
+    if(hasCodePermission) return;
+
+
+    // update active permissions to have its current permission + <account>@eosio.code
+    await session.transact({
+        actions: [
+            {
+                account: 'eosio',
+                name: 'updateauth',
+                data: {
+                    account,
+                    permission: 'active',
+                    parent: 'owner',
+                    auth: {
+                        threshold: 1,
+                        keys: activePermission.required_auth.keys,
+                        accounts: [
+                            ...activePermission.required_auth.accounts,
+                            {
+                                permission: {
+                                    actor: account,
+                                    permission: 'eosio.code',
+                                },
+                                weight: 1,
+                            }
+                        ],
+                        waits: [],
+                    },
+                },
+                authorization: [{
+                    actor: account,
+                    permission: 'active',
+                }],
+            }
+        ]
     });
 }
