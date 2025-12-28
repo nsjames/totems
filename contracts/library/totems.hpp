@@ -117,6 +117,7 @@ namespace totems {
 	    name seller;
 	    uint64_t price;
 	    ModDetails details;
+	    // TODO: Remove this
 	    int64_t score;
 	    std::set<name> hooks;
 	    std::vector<RequiredHook> required_actions;

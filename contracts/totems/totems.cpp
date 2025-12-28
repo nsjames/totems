@@ -418,10 +418,16 @@ uint64_t totemtoken::getfee(const std::vector<name> mods){
 totemtoken::GetTotemsResult totemtoken::gettotems(const std::vector<symbol_code>& tickers){
 	totems_table totems(get_self(), get_self().value);
 	GetTotemsResult result;
+
+	totemstats_table totemstats(get_self(), get_self().value);
 	for(const auto& code : tickers){
-		auto it = totems.find(code.raw());
-		if(it != totems.end()){
-			result.totems.push_back(*it);
+		auto totem_itr = totems.find(code.raw());
+		if(totem_itr != totems.end()){
+			auto stats = totemstats.find(totem_itr->max_supply.symbol.code().raw());
+            result.results.push_back(TotemAndStats{
+                .totem = *totem_itr,
+                .stats = *stats
+            });
 		}
 	}
 	return result;
@@ -440,8 +446,13 @@ totemtoken::GetTotemsResult totemtoken::listtotems(const uint32_t& per_page, con
 	}
 
 	uint32_t count = 0;
+	totemstats_table totemstats(get_self(), get_self().value);
 	while(totem_itr != totems.end() && count < per_page){
-		result.totems.push_back(*totem_itr);
+		auto stats = totemstats.find(totem_itr->max_supply.symbol.code().raw());
+		result.results.push_back(TotemAndStats{
+			.totem = *totem_itr,
+			.stats = *stats
+		});
 		result.cursor = totem_itr->max_supply.symbol.code().raw();
 		++totem_itr;
 		++count;

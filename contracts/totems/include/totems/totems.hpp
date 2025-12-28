@@ -103,8 +103,13 @@ class [[eosio::contract("totems")]] totemtoken : public contract {
     [[eosio::action, eosio::read_only]]
     uint64_t getfee(const std::vector<name> mods);
 
+    struct TotemAndStats {
+        totems::Totem totem;
+        totems::TotemStats stats;
+    };
+
 	struct GetTotemsResult {
-		std::vector<totems::Totem> totems;
+		std::vector<TotemAndStats> results;
 		uint64_t cursor;
 		bool has_more;
 	};
