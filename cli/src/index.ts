@@ -24,11 +24,9 @@ program
     .action((_name, _path) => {
         if(!_name) panic("Mod name is required");
         if(!_path) _path = _name;
-        console.log('Creating a new totem mod...', _name, _path);
 
         // check if current directory is empty
         const fullPath = path.resolve(_path);
-        console.log('Full path:', fullPath);
 
         let isEmpty = true;
         try {

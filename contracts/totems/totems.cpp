@@ -319,7 +319,7 @@ void totemtoken::sub_balance(const name& owner, const asset& value) {
     balances_table balances(get_self(), owner.value);
 
     const auto& from = balances.get(value.symbol.code().raw(), "no balance object found");
-    check(from.balance.amount >= value.amount, "overdrawn balance");
+    check(from.balance.amount >= value.amount, "overdrawn balance of " + value.symbol.code().to_string());
 
     balances.modify(from, owner, [&](auto& a) { a.balance -= value; });
 }

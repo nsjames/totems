@@ -81,7 +81,7 @@ const deployMarketRemover = async () => {
         //     actor: 'modsmodsmods',
         // })), 'modsmodsmods'),
         deployTotems(),
-        deployMarket(),
+        // deployMarket(),
         // deployMarketRemover(),
     ]);
 })();
