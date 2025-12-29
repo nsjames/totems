@@ -8,6 +8,8 @@ CONTRACT whaleblock : public contract {
    public:
       using contract::contract;
 
+      ACTION noop(){}
+
       [[eosio::on_notify(TOTEMS_TRANSFER_NOTIFY)]]
       void ontransfer(name from, name to, asset quantity, std::string memo){
          auto totem = totems::get_totem(quantity.symbol.code());

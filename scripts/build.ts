@@ -15,9 +15,10 @@ import path from "path";
     let HAS_LOCAL_CDT = false;
 
     try {
-        await $`cdt-cpp -v`.quiet();
-        HAS_LOCAL_CDT = true;
+        HAS_LOCAL_CDT = (await $`cdt-cpp -v`).stderr.length === 0;
     } catch {}
+
+    console.log(`Using ${HAS_LOCAL_CDT ? "local" : "dockerized"} CDT compiler`);
 
     async function buildContract(
         contractDir: string,

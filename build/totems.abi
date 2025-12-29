@@ -1,0 +1,538 @@
+{
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT ",
+    "version": "eosio::abi/1.2",
+    "types": [],
+    "structs": [
+        {
+            "name": "AccountBalance",
+            "base": "",
+            "fields": [
+                {
+                    "name": "account",
+                    "type": "name"
+                },
+                {
+                    "name": "balance",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "Balance",
+            "base": "",
+            "fields": [
+                {
+                    "name": "balance",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "GetBalancesResult",
+            "base": "",
+            "fields": [
+                {
+                    "name": "balances",
+                    "type": "AccountBalance[]"
+                },
+                {
+                    "name": "cursor",
+                    "type": "name"
+                },
+                {
+                    "name": "has_more",
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "GetTotemsResult",
+            "base": "",
+            "fields": [
+                {
+                    "name": "results",
+                    "type": "TotemAndStats[]"
+                },
+                {
+                    "name": "cursor",
+                    "type": "uint64"
+                },
+                {
+                    "name": "has_more",
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "MintAllocation",
+            "base": "",
+            "fields": [
+                {
+                    "name": "label",
+                    "type": "string"
+                },
+                {
+                    "name": "recipient",
+                    "type": "name"
+                },
+                {
+                    "name": "quantity",
+                    "type": "asset"
+                },
+                {
+                    "name": "is_minter",
+                    "type": "bool?"
+                }
+            ]
+        },
+        {
+            "name": "Totem",
+            "base": "",
+            "fields": [
+                {
+                    "name": "creator",
+                    "type": "name"
+                },
+                {
+                    "name": "supply",
+                    "type": "asset"
+                },
+                {
+                    "name": "max_supply",
+                    "type": "asset"
+                },
+                {
+                    "name": "allocations",
+                    "type": "MintAllocation[]"
+                },
+                {
+                    "name": "mods",
+                    "type": "TotemMods"
+                },
+                {
+                    "name": "details",
+                    "type": "TotemDetails"
+                },
+                {
+                    "name": "created_at",
+                    "type": "time_point_sec"
+                },
+                {
+                    "name": "updated_at",
+                    "type": "time_point_sec"
+                }
+            ]
+        },
+        {
+            "name": "TotemAndStats",
+            "base": "",
+            "fields": [
+                {
+                    "name": "totem",
+                    "type": "Totem"
+                },
+                {
+                    "name": "stats",
+                    "type": "TotemStats"
+                }
+            ]
+        },
+        {
+            "name": "TotemBackwardsCompat",
+            "base": "",
+            "fields": [
+                {
+                    "name": "supply",
+                    "type": "asset"
+                },
+                {
+                    "name": "max_supply",
+                    "type": "asset"
+                },
+                {
+                    "name": "issuer",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "TotemDetails",
+            "base": "",
+            "fields": [
+                {
+                    "name": "name",
+                    "type": "string"
+                },
+                {
+                    "name": "description",
+                    "type": "string"
+                },
+                {
+                    "name": "image",
+                    "type": "string"
+                },
+                {
+                    "name": "website",
+                    "type": "string"
+                },
+                {
+                    "name": "seed",
+                    "type": "checksum256"
+                }
+            ]
+        },
+        {
+            "name": "TotemMods",
+            "base": "",
+            "fields": [
+                {
+                    "name": "transfer",
+                    "type": "name[]"
+                },
+                {
+                    "name": "mint",
+                    "type": "name[]"
+                },
+                {
+                    "name": "burn",
+                    "type": "name[]"
+                },
+                {
+                    "name": "open",
+                    "type": "name[]"
+                },
+                {
+                    "name": "close",
+                    "type": "name[]"
+                },
+                {
+                    "name": "created",
+                    "type": "name[]"
+                }
+            ]
+        },
+        {
+            "name": "TotemStats",
+            "base": "",
+            "fields": [
+                {
+                    "name": "ticker",
+                    "type": "symbol"
+                },
+                {
+                    "name": "mints",
+                    "type": "uint64"
+                },
+                {
+                    "name": "burns",
+                    "type": "uint64"
+                },
+                {
+                    "name": "transfers",
+                    "type": "uint64"
+                },
+                {
+                    "name": "holders",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "burn",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "quantity",
+                    "type": "asset"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "close",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "ticker",
+                    "type": "symbol"
+                }
+            ]
+        },
+        {
+            "name": "create",
+            "base": "",
+            "fields": [
+                {
+                    "name": "creator",
+                    "type": "name"
+                },
+                {
+                    "name": "ticker",
+                    "type": "symbol"
+                },
+                {
+                    "name": "allocations",
+                    "type": "MintAllocation[]"
+                },
+                {
+                    "name": "mods",
+                    "type": "TotemMods"
+                },
+                {
+                    "name": "details",
+                    "type": "TotemDetails"
+                },
+                {
+                    "name": "referrer",
+                    "type": "name?"
+                }
+            ]
+        },
+        {
+            "name": "created",
+            "base": "",
+            "fields": [
+                {
+                    "name": "creator",
+                    "type": "name"
+                },
+                {
+                    "name": "ticker",
+                    "type": "symbol"
+                }
+            ]
+        },
+        {
+            "name": "getbalances",
+            "base": "",
+            "fields": [
+                {
+                    "name": "accounts",
+                    "type": "name[]"
+                },
+                {
+                    "name": "tickers",
+                    "type": "symbol_code[]"
+                }
+            ]
+        },
+        {
+            "name": "getfee",
+            "base": "",
+            "fields": [
+                {
+                    "name": "mods",
+                    "type": "name[]"
+                }
+            ]
+        },
+        {
+            "name": "gettotems",
+            "base": "",
+            "fields": [
+                {
+                    "name": "tickers",
+                    "type": "symbol_code[]"
+                }
+            ]
+        },
+        {
+            "name": "listtotems",
+            "base": "",
+            "fields": [
+                {
+                    "name": "per_page",
+                    "type": "uint32"
+                },
+                {
+                    "name": "cursor",
+                    "type": "uint64?"
+                }
+            ]
+        },
+        {
+            "name": "mint",
+            "base": "",
+            "fields": [
+                {
+                    "name": "mod",
+                    "type": "name"
+                },
+                {
+                    "name": "minter",
+                    "type": "name"
+                },
+                {
+                    "name": "quantity",
+                    "type": "asset"
+                },
+                {
+                    "name": "payment",
+                    "type": "asset"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "open",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "ticker",
+                    "type": "symbol"
+                },
+                {
+                    "name": "ram_payer",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "transfer",
+            "base": "",
+            "fields": [
+                {
+                    "name": "from",
+                    "type": "name"
+                },
+                {
+                    "name": "to",
+                    "type": "name"
+                },
+                {
+                    "name": "quantity",
+                    "type": "asset"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "name": "burn",
+            "type": "burn",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "close",
+            "type": "close",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "create",
+            "type": "create",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "created",
+            "type": "created",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "getbalances",
+            "type": "getbalances",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "getfee",
+            "type": "getfee",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "gettotems",
+            "type": "gettotems",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "listtotems",
+            "type": "listtotems",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "mint",
+            "type": "mint",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "open",
+            "type": "open",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "transfer",
+            "type": "transfer",
+            "ricardian_contract": ""
+        }
+    ],
+    "tables": [
+        {
+            "name": "accounts",
+            "type": "Balance",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "stat",
+            "type": "TotemBackwardsCompat",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "totems",
+            "type": "Totem",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "totemstats",
+            "type": "TotemStats",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        }
+    ],
+    "ricardian_clauses": [],
+    "variants": [],
+    "action_results": [
+        {
+            "name": "getbalances",
+            "result_type": "GetBalancesResult"
+        },
+        {
+            "name": "getfee",
+            "result_type": "uint64"
+        },
+        {
+            "name": "gettotems",
+            "result_type": "GetTotemsResult"
+        },
+        {
+            "name": "listtotems",
+            "result_type": "GetTotemsResult"
+        }
+    ]
+}

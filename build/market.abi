@@ -1,0 +1,290 @@
+{
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT ",
+    "version": "eosio::abi/1.2",
+    "types": [],
+    "structs": [
+        {
+            "name": "ActionField",
+            "base": "",
+            "fields": [
+                {
+                    "name": "param",
+                    "type": "string"
+                },
+                {
+                    "name": "type",
+                    "type": "uint8"
+                },
+                {
+                    "name": "data",
+                    "type": "bytes"
+                },
+                {
+                    "name": "offset",
+                    "type": "uint16"
+                },
+                {
+                    "name": "size",
+                    "type": "uint16"
+                },
+                {
+                    "name": "min",
+                    "type": "uint64?"
+                },
+                {
+                    "name": "max",
+                    "type": "uint64?"
+                }
+            ]
+        },
+        {
+            "name": "GetModsResult",
+            "base": "",
+            "fields": [
+                {
+                    "name": "mods",
+                    "type": "Mod[]"
+                },
+                {
+                    "name": "cursor",
+                    "type": "name"
+                },
+                {
+                    "name": "has_more",
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "Mod",
+            "base": "",
+            "fields": [
+                {
+                    "name": "contract",
+                    "type": "name"
+                },
+                {
+                    "name": "seller",
+                    "type": "name"
+                },
+                {
+                    "name": "price",
+                    "type": "uint64"
+                },
+                {
+                    "name": "details",
+                    "type": "ModDetails"
+                },
+                {
+                    "name": "score",
+                    "type": "int64"
+                },
+                {
+                    "name": "hooks",
+                    "type": "name[]"
+                },
+                {
+                    "name": "required_actions",
+                    "type": "RequiredHook[]"
+                },
+                {
+                    "name": "published_at",
+                    "type": "time_point_sec"
+                },
+                {
+                    "name": "updated_at",
+                    "type": "time_point_sec"
+                }
+            ]
+        },
+        {
+            "name": "ModDetails",
+            "base": "",
+            "fields": [
+                {
+                    "name": "name",
+                    "type": "string"
+                },
+                {
+                    "name": "summary",
+                    "type": "string"
+                },
+                {
+                    "name": "markdown",
+                    "type": "string"
+                },
+                {
+                    "name": "image",
+                    "type": "string"
+                },
+                {
+                    "name": "website",
+                    "type": "string"
+                },
+                {
+                    "name": "website_token_path",
+                    "type": "string"
+                },
+                {
+                    "name": "is_minter",
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "RequiredAction",
+            "base": "",
+            "fields": [
+                {
+                    "name": "contract",
+                    "type": "name"
+                },
+                {
+                    "name": "action",
+                    "type": "name"
+                },
+                {
+                    "name": "fields",
+                    "type": "ActionField[]"
+                },
+                {
+                    "name": "purpose",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "RequiredHook",
+            "base": "",
+            "fields": [
+                {
+                    "name": "hook",
+                    "type": "name"
+                },
+                {
+                    "name": "actions",
+                    "type": "RequiredAction[]"
+                }
+            ]
+        },
+        {
+            "name": "getmods",
+            "base": "",
+            "fields": [
+                {
+                    "name": "contracts",
+                    "type": "name[]"
+                }
+            ]
+        },
+        {
+            "name": "listmods",
+            "base": "",
+            "fields": [
+                {
+                    "name": "per_page",
+                    "type": "uint32"
+                },
+                {
+                    "name": "cursor",
+                    "type": "name?"
+                }
+            ]
+        },
+        {
+            "name": "publish",
+            "base": "",
+            "fields": [
+                {
+                    "name": "seller",
+                    "type": "name"
+                },
+                {
+                    "name": "contract",
+                    "type": "name"
+                },
+                {
+                    "name": "hooks",
+                    "type": "name[]"
+                },
+                {
+                    "name": "price",
+                    "type": "uint64"
+                },
+                {
+                    "name": "details",
+                    "type": "ModDetails"
+                },
+                {
+                    "name": "required_actions",
+                    "type": "RequiredHook[]"
+                },
+                {
+                    "name": "referrer",
+                    "type": "name?"
+                }
+            ]
+        },
+        {
+            "name": "update",
+            "base": "",
+            "fields": [
+                {
+                    "name": "contract",
+                    "type": "name"
+                },
+                {
+                    "name": "price",
+                    "type": "uint64"
+                },
+                {
+                    "name": "details",
+                    "type": "ModDetails"
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "name": "getmods",
+            "type": "getmods",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "listmods",
+            "type": "listmods",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "publish",
+            "type": "publish",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "update",
+            "type": "update",
+            "ricardian_contract": ""
+        }
+    ],
+    "tables": [
+        {
+            "name": "mods",
+            "type": "Mod",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        }
+    ],
+    "ricardian_clauses": [],
+    "variants": [],
+    "action_results": [
+        {
+            "name": "getmods",
+            "result_type": "GetModsResult"
+        },
+        {
+            "name": "listmods",
+            "result_type": "GetModsResult"
+        }
+    ]
+}

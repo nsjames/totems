@@ -1,7 +1,12 @@
 .idea
 .env
-build/
+
 bun.lock
 node_modules/
 .validator_contract
 .DS_Store
+build/*
+!build/totems.*
+!build/market.*
+!build/core.vaulta.*
+!build/eosio.token.*
