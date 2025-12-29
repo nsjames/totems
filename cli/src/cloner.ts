@@ -2,6 +2,7 @@ import {run, runLive} from './runner';
 import {confirm} from "./prompt";
 import fs from "fs";
 import path from "path";
+import * as os from "node:os";
 
 const TEMPLATE_REPO = "https://github.com/nsjames/totems-mod-template.git";
 
@@ -33,20 +34,21 @@ export const syncTemplate = async () => {
         }
     }
 
-    if (!hasChanges) {
-        console.log("✅ No upstream changes detected");
-        return;
+    if (hasChanges) {
+        const ok = await confirm("\nApply these changes?");
+        if (!ok) {
+            console.log("❌ Sync cancelled");
+            return;
+        }
+
+        const files = TEMPLATE_SYNC_FILES.join(" ");
+        console.log("\n⬇️  Applying upstream changes...");
+        runLive(`git checkout upstream/main -- ${files}`);
     }
 
-    const ok = await confirm("\nApply these changes?");
-    if (!ok) {
-        console.log("❌ Sync cancelled");
-        return;
-    }
 
-    const files = TEMPLATE_SYNC_FILES.join(" ");
-    console.log("\n⬇️  Applying upstream changes...");
-    runLive(`git checkout upstream/main -- ${files}`);
+
+    copyTotemsPrebuilts(process.cwd());
 
     console.log("✅ Template synced");
 };
@@ -78,3 +80,39 @@ export const copyModTemplateContract = (
     fs.rmSync(tempDir, { recursive: true, force: true });
 };
 
+export const copyTotemsPrebuilts = (targetPath: string) => {
+    const REPO_URL = "https://github.com/nsjames/totems.git";
+    const BRANCH = "main";
+
+    const prebuiltsDir = path.join(targetPath, "prebuilts");
+    if (fs.existsSync(prebuiltsDir)) {
+        fs.rmSync(prebuiltsDir, { recursive: true, force: true });
+    }
+
+    const tempDir = fs.mkdtempSync(
+        path.join(os.tmpdir(), "totems-prebuilts-")
+    );
+
+    try {
+        console.log("📦 Cloning totems repo (shallow)...");
+        run(`git clone --depth=1 --filter=blob:none --no-checkout ${REPO_URL} "${tempDir}"`);
+
+        run(`git sparse-checkout init --cone`, tempDir);
+        run(`git sparse-checkout set build`, tempDir);
+        run(`git checkout ${BRANCH}`, tempDir);
+
+        fs.mkdirSync(prebuiltsDir, { recursive: true });
+
+        console.log("📂 Copying prebuilts...");
+        fs.cpSync(
+            path.join(tempDir, "build"),
+            prebuiltsDir,
+            { recursive: true }
+        );
+
+        console.log("✅ Prebuilts copied");
+    } finally {
+        console.log("🧹 Cleaning up temp directory...");
+        fs.rmSync(tempDir, { recursive: true, force: true });
+    }
+};

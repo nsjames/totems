@@ -4,7 +4,7 @@ import { Command } from "commander";
 import packageJson from '../package.json';
 import fs from "fs";
 import path from "path";
-import {cloneTemplate, copyModTemplateContract, syncTemplate} from './cloner';
+import {cloneTemplate, copyModTemplateContract, copyTotemsPrebuilts, syncTemplate} from './cloner';
 
 const program = new Command();
 
@@ -17,16 +17,6 @@ program
     .name("Totem Mods CLI")
     .version(packageJson.version)
     .description("A CLI for Totem Mods (totems.fun)")
-    // .option('-v', 'version')
-    // .option("-t, --touch <value>", "Create a file")
-    // .parse(process.argv);
-
-// const options = program.opts();
-//
-// if(options.v) {
-//     console.log(packageJson.version);
-//     process.exit(0);
-// }
 
 program
     .command('create [name] [path]')
@@ -69,6 +59,7 @@ program
             }
 
             copyModTemplateContract(fullPath, _name);
+            copyTotemsPrebuilts(fullPath);
             console.log(`New contract '${_name}' created at ${newContractPath}`);
         }
 
