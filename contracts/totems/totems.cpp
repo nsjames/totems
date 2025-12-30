@@ -24,12 +24,13 @@ void totemtoken::create(
     uint64_t mod_fees = 0;
 
 	std::vector<shared::FeeDisbursement> disbursements;
-	uint64_t network_fee = shared::TOTEM_CREATION_BASE_FEE;
+	uint64_t base_fee = shared::get_base_fee(get_self());
+	uint64_t network_fee = base_fee;
 	if(referrer.has_value()) {
-		network_fee = shared::TOTEM_CREATION_BASE_FEE * 80 / 100;
+		network_fee = base_fee * 20 / 100;
 		disbursements.push_back(shared::FeeDisbursement{
 			.recipient = referrer.value(),
-			.amount = shared::TOTEM_CREATION_BASE_FEE * 20 / 100
+			.amount = base_fee * 80 / 100
 		});
 	}
 	disbursements.push_back(shared::FeeDisbursement{
@@ -78,7 +79,7 @@ void totemtoken::create(
 	iterate_mods(mods.close, "close"_n);
 	iterate_mods(mods.created, "created"_n);
 
-	shared::ensure_tokens_available(shared::TOTEM_CREATION_BASE_FEE + mod_fees, get_self());
+	shared::ensure_tokens_available(base_fee + mod_fees, get_self());
 	shared::dispense_tokens(get_self(), disbursements);
 
 	totemstats_table totemstats(get_self(), get_self().value);
@@ -412,7 +413,7 @@ uint64_t totemtoken::getfee(const std::vector<name> mods){
         mod_fees += mod.value().price;
     }
 
-    return mod_fees + shared::TOTEM_CREATION_BASE_FEE;
+    return mod_fees + shared::get_base_fee(get_self());
 }
 
 totemtoken::GetTotemsResult totemtoken::gettotems(const std::vector<symbol_code>& tickers){

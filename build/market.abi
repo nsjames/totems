@@ -38,6 +38,16 @@
             ]
         },
         {
+            "name": "FeeConfig",
+            "base": "",
+            "fields": [
+                {
+                    "name": "amount",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
             "name": "GetModsResult",
             "base": "",
             "fields": [
@@ -168,6 +178,11 @@
             ]
         },
         {
+            "name": "getfee",
+            "base": "",
+            "fields": []
+        },
+        {
             "name": "getmods",
             "base": "",
             "fields": [
@@ -226,6 +241,16 @@
             ]
         },
         {
+            "name": "setfee",
+            "base": "",
+            "fields": [
+                {
+                    "name": "amount",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
             "name": "update",
             "base": "",
             "fields": [
@@ -246,6 +271,11 @@
     ],
     "actions": [
         {
+            "name": "getfee",
+            "type": "getfee",
+            "ricardian_contract": ""
+        },
+        {
             "name": "getmods",
             "type": "getmods",
             "ricardian_contract": ""
@@ -261,12 +291,24 @@
             "ricardian_contract": ""
         },
         {
+            "name": "setfee",
+            "type": "setfee",
+            "ricardian_contract": ""
+        },
+        {
             "name": "update",
             "type": "update",
             "ricardian_contract": ""
         }
     ],
     "tables": [
+        {
+            "name": "feeconfig",
+            "type": "FeeConfig",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
         {
             "name": "mods",
             "type": "Mod",
@@ -278,6 +320,10 @@
     "ricardian_clauses": [],
     "variants": [],
     "action_results": [
+        {
+            "name": "getfee",
+            "result_type": "uint64"
+        },
         {
             "name": "getmods",
             "result_type": "GetModsResult"

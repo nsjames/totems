@@ -2,6 +2,7 @@ import {Blockchain} from "@vaulta/vert";
 // @ts-ignore
 import chai, { assert } from "chai";
 import {pushRandomMod, pushRandomTotem, setup, transfer} from "./shared";
+import * as bun from "bun";
 chai.config.truncateThreshold = 0;
 const blockchain = new Blockchain();
 
@@ -133,18 +134,18 @@ describe('Readonly Actions', () => {
             const result = await totemsContract.actions.gettotems([[ticker]]).send().then(x => {
                 return JSON.parse(JSON.stringify(x[0].returnValue));
             });
-            const parsedTicker = result.totems[0].max_supply.split(' ')[1];
-            const decimals = parseInt(result.totems[0].max_supply.split('.')[1].split(' ')[0].length);
+            const parsedTicker = result.results[0].totem.max_supply.split(' ')[1];
+            const decimals = parseInt(result.results[0].totem.max_supply.split('.')[1].split(' ')[0].length);
             const totemRows = totemsContract.tables.totems().getTableRows();
-            const expectedTotem = totemRows.find((t:any) => t.max_supply === result.totems[0].max_supply);
-            assert.equal(result.totems.length, 1, `Should return 1 totem for ticker ${ticker}`);
+            const expectedTotem = totemRows.find((t:any) => t.max_supply === result.results[0].totem.max_supply);
+            assert.equal(result.results.length, 1, `Should return 1 totem for ticker ${ticker}`);
             assert.equal(parsedTicker, ticker, `Totem ticker should be ${ticker}`);
             assert.equal(decimals, 4, `Totem decimals should be 4`);
-            assert.equal(result.totems[0].creator, expectedTotem.creator, `Totem creator should be ${expectedTotem.creator}`);
-            assert.equal(result.totems[0].max_supply, expectedTotem.max_supply, `Totem max_supply should be ${expectedTotem.max_supply}`);
-            assert.deepEqual(result.totems[0].allocations, expectedTotem.allocations, `Totem allocations should match`);
-            assert.deepEqual(result.totems[0].mods, expectedTotem.mods, `Totem mods should match`);
-            assert.deepEqual(result.totems[0].details, expectedTotem.details, `Totem details should match`);
+            assert.equal(result.results[0].totem.creator, expectedTotem.creator, `Totem creator should be ${expectedTotem.creator}`);
+            assert.equal(result.results[0].totem.max_supply, expectedTotem.max_supply, `Totem max_supply should be ${expectedTotem.max_supply}`);
+            assert.deepEqual(result.results[0].totem.allocations, expectedTotem.allocations, `Totem allocations should match`);
+            assert.deepEqual(result.results[0].totem.mods, expectedTotem.mods, `Totem mods should match`);
+            assert.deepEqual(result.results[0].totem.details, expectedTotem.details, `Totem details should match`);
         }
     })
 
@@ -152,9 +153,10 @@ describe('Readonly Actions', () => {
         const result = await totemsContract.actions.gettotems([Object.keys(totems)]).send().then(x => {
             return JSON.parse(JSON.stringify(x[0].returnValue));
         });
-        assert.equal(result.totems.length, Object.keys(totems).length, `Should return all totems`);
-        assert(result.totems.every((totem:any) => Object.keys(totems).includes(totem.max_supply.split(' ')[1])), 'All returned totems should be in the original totems');
-        for(const totem of result.totems){
+        assert.equal(result.results.length, Object.keys(totems).length, `Should return all totems`);
+        assert(result.results.every(({totem}) => Object.keys(totems).includes(totem.max_supply.split(' ')[1])), 'All returned totems should be in the original totems');
+        for(const bundle of result.results){
+            const {totem} = bundle;
             const expectedTotem = totemsContract.tables.totems().getTableRows().find((t:any) => t.max_supply === totem.max_supply);
             const parsedTicker = totem.max_supply.split(' ')[1];
             const decimals = parseInt(totem.max_supply.split('.')[1].split(' ')[0].length);
@@ -172,9 +174,10 @@ describe('Readonly Actions', () => {
         const firstBatch = await totemsContract.actions.listtotems([5, null]).send().then(x => {
             return JSON.parse(JSON.stringify(x[0].returnValue));
         });
-        assert.equal(firstBatch.totems.length, 5, `Should return 5 totems`);
-        assert(firstBatch.totems.every((totem:any) => Object.keys(totems).includes(totem.max_supply.split(' ')[1])), 'All returned totems should be in the original totems');
-        for(const totem of firstBatch.totems){
+        assert.equal(firstBatch.results.length, 5, `Should return 5 totems`);
+        assert(firstBatch.results.every(({totem}) => Object.keys(totems).includes(totem.max_supply.split(' ')[1])), 'All returned totems should be in the original totems');
+        for(const bundle of firstBatch.results){
+            const {totem} = bundle;
             const expectedTotem = totemsContract.tables.totems().getTableRows().find((t:any) => t.max_supply === totem.max_supply);
             const parsedTicker = totem.max_supply.split(' ')[1];
             const decimals = parseInt(totem.max_supply.split('.')[1].split(' ')[0].length);
@@ -191,10 +194,11 @@ describe('Readonly Actions', () => {
             return JSON.parse(JSON.stringify(x[0].returnValue));
         });
 
-        assert.equal(secondBatch.totems.length, 5, `Should return 5 totems`);
-        assert(secondBatch.totems.every((totem:any) => Object.keys(totems).includes(totem.max_supply.split(' ')[1])), 'All returned totems should be in the original totems');
-        for(const totem of secondBatch.totems){
-            assert.isFalse(firstBatch.totems.some((t:any) => t.max_supply === totem.max_supply), `Totem ${totem.max_supply} should not be in the first batch`);
+        assert.equal(secondBatch.results.length, 5, `Should return 5 totems`);
+        assert(secondBatch.results.every(({totem}) => Object.keys(totems).includes(totem.max_supply.split(' ')[1])), 'All returned totems should be in the original totems');
+        for(const bundle of secondBatch.results){
+            const {totem} = bundle;
+            assert.isFalse(firstBatch.results.some(({totem:t}) => t.max_supply === totem.max_supply), `Totem ${totem.max_supply} should not be in the first batch`);
             const expectedTotem = totemsContract.tables.totems().getTableRows().find((t:any) => t.max_supply === totem.max_supply);
             const parsedTicker = totem.max_supply.split(' ')[1];
             const decimals = parseInt(totem.max_supply.split('.')[1].split(' ')[0].length);

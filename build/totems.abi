@@ -28,6 +28,16 @@
             ]
         },
         {
+            "name": "FeeConfig",
+            "base": "",
+            "fields": [
+                {
+                    "name": "amount",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
             "name": "GetBalancesResult",
             "base": "",
             "fields": [
@@ -330,12 +340,7 @@
         {
             "name": "getfee",
             "base": "",
-            "fields": [
-                {
-                    "name": "mods",
-                    "type": "name[]"
-                }
-            ]
+            "fields": []
         },
         {
             "name": "gettotems",
@@ -402,6 +407,16 @@
                 {
                     "name": "ram_payer",
                     "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "setfee",
+            "base": "",
+            "fields": [
+                {
+                    "name": "amount",
+                    "type": "uint64"
                 }
             ]
         },
@@ -480,6 +495,11 @@
             "ricardian_contract": ""
         },
         {
+            "name": "setfee",
+            "type": "setfee",
+            "ricardian_contract": ""
+        },
+        {
             "name": "transfer",
             "type": "transfer",
             "ricardian_contract": ""
@@ -489,6 +509,13 @@
         {
             "name": "accounts",
             "type": "Balance",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "feeconfig",
+            "type": "FeeConfig",
             "index_type": "i64",
             "key_names": [],
             "key_types": []

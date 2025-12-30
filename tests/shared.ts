@@ -35,6 +35,7 @@ export interface ModDetails {
     website: string;
     website_token_path: string;
     image: string;
+    is_minter: boolean;
 }
 
 export const publish = async (market, seller:string, contract:string, hooks:string[], price:number, details:ModDetails, authorizer = 'seller', referrer = undefined,
@@ -108,9 +109,10 @@ export const pushRandomMod = async (blockchain, market, seller:string) => {
         name: `Mod ${account}`,
         summary: 'This is a random mod.',
         markdown: '',
-        image: '',
+        image: 'image',
         website: '',
         website_token_path: '',
+        is_minter: false
     }, seller);
 
     return contract;

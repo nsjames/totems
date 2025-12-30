@@ -9,9 +9,6 @@ namespace shared {
 
 	static const symbol EOS_SYMBOL = symbol("EOS", 4);
 	static const symbol VAULTA_SYMBOL = symbol("A", 4);
-	// TODO: Make dynamic based on configuration actions
-    static const uint64_t TOTEM_CREATION_BASE_FEE = 1'0000;
-    static const uint64_t MOD_PUBLISH_FEE = 1'0000;
 
 	// Hooks are triggers for on_notify events in mods
 	std::vector<name> VALID_HOOKS = {
@@ -82,6 +79,41 @@ namespace shared {
 				   std::make_tuple( contract, disbursement.recipient, asset(disbursement.amount, shared::VAULTA_SYMBOL), std::string("Totem fee") )
 				).send();
 			}
+		}
+	}
+
+	struct [[eosio::table]] FeeConfig {
+		uint64_t amount;
+
+		uint64_t primary_key() const { return 0; }
+	};
+
+	typedef eosio::multi_index<"feeconfig"_n, FeeConfig> fee_config_table;
+
+	void set_fee_config(const name& contract, const uint64_t& amount) {
+		require_auth(contract);
+
+		fee_config_table fee_config(contract, contract.value);
+		auto it = fee_config.find(0);
+		if(it == fee_config.end()) {
+			fee_config.emplace(contract, [&](auto& row) {
+				row.amount = amount;
+			});
+		} else {
+			fee_config.modify(it, same_payer, [&](auto& row) {
+				row.amount = amount;
+			});
+		}
+	}
+
+	uint64_t get_base_fee(const name& contract) {
+		fee_config_table fee_config(contract, contract.value);
+		auto it = fee_config.find(0);
+		if(it == fee_config.end()) {
+			// defaults to 100 A/EOS
+			return 100'0000;
+		} else {
+			return it->amount;
 		}
 	}
 }

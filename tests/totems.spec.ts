@@ -57,6 +57,7 @@ interface ModDetails {
     website: string;
     website_token_path: string;
     image: string;
+    is_minter: boolean;
 }
 
 const publish = async (seller:string, contract:string, hooks:string[], price:number, details:ModDetails, authorizer = 'seller', referrer = undefined,
@@ -98,6 +99,9 @@ const modsLength = (totem) => {
     return Object.keys(totem.mods).reduce((acc, key) => acc + totem.mods[key].length, 0);
 }
 
+let market_fee = 0;
+let totems_fee = 0;
+
 describe('Totems', () => {
     it('Should set up core token contracts', async () => {
         await eos.actions.create(['tester', '1000000000.0000 EOS']).send('eosio.token');
@@ -114,6 +118,33 @@ describe('Totems', () => {
             await eos.actions.open([account, '4,EOS', account]).send(account);
         }
     })
+    it('should set up fees', async () => {
+        const checkFees = async (_contract, _fee_holder) => {
+            _fee_holder = (await _contract.actions.getfee([]).send())[0].returnValue / 10000;
+            assert(_fee_holder === 100, "Market fee should be 100.0000 A");
+
+            // should not be able to set fee from any account but itself
+            {
+                await expectToThrow(_contract.actions.setfee([150_0000]).send('tester'), `missing required authority ${_contract.name.toString()}`);
+                _fee_holder = (await _contract.actions.getfee([]).send())[0].returnValue / 10000;
+                assert(_fee_holder === 100, "Totems fee should still be 100.0000 A");
+            }
+
+            // should be able to set the fee to 150, and then back to 100
+            {
+                await _contract.actions.setfee([150_0000]).send(_contract.name.toString());
+                _fee_holder = (await _contract.actions.getfee([]).send())[0].returnValue / 10000;
+                assert(_fee_holder === 150, "Totems fee should be 150.0000 A");
+
+                await _contract.actions.setfee([100_0000]).send(_contract.name.toString());
+                _fee_holder = (await _contract.actions.getfee([]).send())[0].returnValue / 10000;
+                assert(_fee_holder === 100, "Totems fee should be 100.0000 A");
+            }
+        }
+
+        await checkFees(market, market_fee);
+        await checkFees(contract, totems_fee);
+    })
     it('Should be able to create a totem with no mods', async () => {
         await transfer('tester', 'creator', '100.0000 A');
 
@@ -121,6 +152,8 @@ describe('Totems', () => {
         await transfer('creator', contract.name.toString(), '99.0000 A');
         await expectToThrow(create('4,TEST', []), 'eosio_assert: Insufficient balance for fee payment');
         await transfer('creator', contract.name.toString(), '1.0000 A');
+        await expectToThrow(create('4,TEST', []), 'eosio_assert: Totem initial allocation must be greater than 0');
+
 
         assert(getBalance(contract.name.toString(), eos) === 0, "Should not use EOS balances")
         assert(getBalance(contract.name.toString(), vaulta) === 100, "Should have 100 Vaulta");
@@ -201,7 +234,8 @@ describe('Totems', () => {
             markdown: "## Cool Mod\n\nThis mod is really cool because...",
             website: "",
             website_token_path: "",
-            image: "ipfs://QmCoolModImageHash"
+            image: "ipfs://QmCoolModImageHash",
+            is_minter: false,
         })
 
         const mods = JSON.parse(JSON.stringify(await market.tables.mods(nameToBigInt(market.name.toString())).getTableRows()));
@@ -224,7 +258,8 @@ describe('Totems', () => {
             markdown: "## Cool Mod\n\nThis mod is really cool because...",
             website: "",
             website_token_path: "",
-            image: "ipfs://QmCoolModImageHash"
+            image: "ipfs://QmCoolModImageHash",
+            is_minter: false,
         }
 
         await expectToThrow(publish('seller', freezer.name.toString(), ['transfer'], 0, details, 'tester'), 'missing required authority seller');
@@ -313,7 +348,8 @@ describe('Totems', () => {
             markdown: "",
             website: "",
             website_token_path: "",
-            image: ""
+            image: "image",
+            is_minter: true,
         })
 
         const params = [
@@ -395,7 +431,8 @@ describe('Totems', () => {
             markdown: "",
             website: "",
             website_token_path: "",
-            image: ""
+            image: "image",
+            is_minter: false,
         }
 
         const restrictedCoreActions = [
@@ -437,7 +474,8 @@ describe('Totems', () => {
             markdown: "## Complete Mod\n\nThis mod includes:\n- Feature 1\n- Feature 2",
             website: "https://example.com/mod",
             website_token_path: "/tokens/{ticker}",
-            image: "ipfs://QmCompleteModImageHash123"
+            image: "ipfs://QmCompleteModImageHash123",
+            is_minter: true,
         };
 
         await publish('seller', burner.name.toString(), ['burn'], 50_0000, modDetails);
@@ -468,7 +506,8 @@ describe('Totems', () => {
             markdown: "## Required Actions Mod",
             website: "",
             website_token_path: "",
-            image: "ipfs://QmRequiredActionsHash"
+            image: "ipfs://QmRequiredActionsHash",
+            is_minter: false,
         };
 
         const serializedAction = await serializeActionFields({

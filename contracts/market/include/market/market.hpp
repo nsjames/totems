@@ -8,14 +8,23 @@
 
 using namespace eosio;
 
-static const uint64_t FEE = 100'0000;
-
 class [[eosio::contract("market")]] market : public contract {
    public:
     using contract::contract;
 
 	// Adds the `mods` table to this contract's ABI
 	typedef eosio::multi_index<"mods"_n, totems::Mod> mods_table;
+	typedef eosio::multi_index<"feeconfig"_n, shared::FeeConfig> fee_config_table;
+
+	[[eosio::action]]
+	void setfee(const uint64_t& amount){
+		shared::set_fee_config(get_self(), amount);
+	}
+
+	[[eosio::action, eosio::read_only]]
+	uint64_t getfee(){
+		return shared::get_base_fee(get_self());
+	}
 
 	/***
 	  * Publish a mod to the market

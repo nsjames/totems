@@ -32,12 +32,13 @@ void market::publish(
 	check(mod == mods.end(), "Mod already published");
 
 	std::vector<shared::FeeDisbursement> disbursements;
-	uint64_t network_fee = shared::MOD_PUBLISH_FEE;
+	uint64_t base_fee = shared::get_base_fee(get_self());
+	uint64_t network_fee = base_fee;
     if(referrer.has_value()) {
-        network_fee = shared::MOD_PUBLISH_FEE * 80 / 100;
+        network_fee = base_fee * 20 / 100;
         disbursements.push_back(shared::FeeDisbursement{
             .recipient = referrer.value(),
-            .amount = shared::MOD_PUBLISH_FEE * 20 / 100
+            .amount = base_fee * 80 / 100
         });
     }
 
@@ -46,7 +47,7 @@ void market::publish(
         .amount = network_fee
     });
 
-    shared::ensure_tokens_available(shared::MOD_PUBLISH_FEE, get_self());
+    shared::ensure_tokens_available(base_fee, get_self());
     shared::dispense_tokens(get_self(), disbursements);
 
     check(!details.name.empty(), "Mod name cannot be empty");
