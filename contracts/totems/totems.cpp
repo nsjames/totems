@@ -290,8 +290,20 @@ void totemtoken::transfer(const name& from, const name& to, const asset& quantit
     const auto& totem = totems.get(quantity.symbol.code().raw());
     check(quantity.symbol == totem.supply.symbol, "symbol precision mismatch");
 
-    require_recipient(from);
-    require_recipient(to);
+	auto from_is_mod = std::find(
+		totem.mods.transfer.begin(),
+		totem.mods.transfer.end(),
+		from
+	) != totem.mods.transfer.end();
+
+	auto to_is_mod = std::find(
+		totem.mods.transfer.begin(),
+		totem.mods.transfer.end(),
+		to
+	) != totem.mods.transfer.end();
+
+    if(!from_is_mod) require_recipient(from);
+    if(!to_is_mod) require_recipient(to);
 
     auto payer = has_auth(to) ? to : from;
 
