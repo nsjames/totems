@@ -185,8 +185,6 @@ void totemtoken::mint(const name& mod, const name& minter, const asset& quantity
     check(totem != totems.end(), "Totem not found");
 
 	check(quantity.is_valid(), "invalid quantity");
-	check(quantity.amount > 0, "must mint positive quantity");
-	// TODO: superfluous?
 	check(quantity.symbol == totem->supply.symbol, "symbol precision mismatch");
 
 	auto found_mod = std::find_if(

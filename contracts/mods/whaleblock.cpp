@@ -15,7 +15,7 @@ CONTRACT whaleblock : public contract {
          auto totem = totems::get_totem(quantity.symbol.code());
          check(totem.has_value(), "Totem does not exist");
 
-         auto balance = totems::get_totem_balance(to, quantity.symbol);
+         auto balance = totems::get_balance(to, quantity.symbol);
          int64_t max_holdings = totem->max_supply.amount*0.05;
          // This notification comes AFTER the transfer, so the whale is already holding the new balance
          // and will have exceeded the limit if this check fails.

@@ -248,13 +248,29 @@ namespace totems {
 	  * @param ticker - The symbol of the totem/ticker
 	  * @return The asset balance of the totem for the account or 0 if none
 	  */
-	asset get_totem_balance(const name& owner, const symbol& ticker) {
-	    balances_table balances(TOTEMS_CONTRACT, owner.value);
+	asset get_balance(const name& owner, const symbol& ticker, const name& contract = TOTEMS_CONTRACT) {
+	    balances_table balances(contract, owner.value);
 	    auto it = balances.find(ticker.code().raw());
 	    if (it == balances.end()) {
 	        return asset{0, ticker};
 	    }
 	    return it->balance;
+	}
+
+	/***
+	  * Transfers totem tokens from one account to another
+	  * @param from - The account sending the totems
+	  * @param to - The account receiving the totems
+	  * @param quantity - The asset quantity of totems to send
+	  * @param memo - A memo for the transfer
+	  */
+	void transfer(const name& from, const name& to, const asset& quantity, const std::string& memo, const name& contract = TOTEMS_CONTRACT) {
+	    action(
+	        permission_level{from, "active"_n},
+	        contract,
+	        "transfer"_n,
+	        std::make_tuple(from, to, quantity, memo)
+	    ).send();
 	}
 
 	/***
