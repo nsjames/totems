@@ -69,6 +69,13 @@ void totemtoken::create(
 	                .amount = mod.value().price
 	            });
             }
+
+            action(
+               permission_level{get_self(), "active"_n},
+               totems::MARKET_CONTRACT,
+               "addlicense"_n,
+               std::make_tuple(ticker.code(), mod)
+            ).send();
         }
 	};
 

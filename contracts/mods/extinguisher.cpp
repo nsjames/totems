@@ -1,5 +1,6 @@
 #include <eosio/eosio.hpp>
 #include <eosio/asset.hpp>
+#include "../library/totems.hpp"
 using namespace eosio;
 
 CONTRACT extinguisher : public contract {

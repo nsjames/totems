@@ -4,7 +4,7 @@ import { Command } from "commander";
 import packageJson from '../package.json';
 import fs from "fs";
 import path from "path";
-import {cloneTemplate, copyModTemplateContract, copyTotemsPrebuilts, syncTemplate} from './cloner';
+import {cloneTemplate, copyModTemplateContract, copyTotemsLibrary, copyTotemsPrebuilts, syncTemplate} from './cloner';
 
 const program = new Command();
 
@@ -38,6 +38,8 @@ program
             // no existing files, create new totem mod from template
             try { fs.mkdirSync(fullPath, { recursive: true }); } catch {}
             cloneTemplate(fullPath);
+            copyTotemsPrebuilts(fullPath);
+            copyTotemsLibrary(fullPath);
             console.log(`New totem mod '${_name}' created at ${fullPath}`);
         } else {
             // add new contract into 'contracts' directory
@@ -57,7 +59,6 @@ program
             }
 
             copyModTemplateContract(fullPath, _name);
-            copyTotemsPrebuilts(fullPath);
             console.log(`New contract '${_name}' created at ${newContractPath}`);
         }
 

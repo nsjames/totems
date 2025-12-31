@@ -36,8 +36,9 @@ using namespace eosio;
 namespace totems {
 
 	// Smart contract constants, make sure you get the right library for your network!
-	static const name MODS_CONTRACT = "modsmodsmods"_n;
+	static const name MARKET_CONTRACT = "modsmodsmods"_n;
 	static const name TOTEMS_CONTRACT = "totemstotems"_n;
+	static const name PROXY_MOD_CONTRACT = "totemodproxy"_n;
 
 	/* ---------------- MOD MARKET ---------------- */
 
@@ -135,7 +136,7 @@ namespace totems {
 
 	// Fetches a mod from the market, or nullopt if it doesn't exist
 	std::optional<Mod> get_mod(const name& contract) {
-	    mods_table mods(MODS_CONTRACT, MODS_CONTRACT.value);
+	    mods_table mods(MARKET_CONTRACT, MARKET_CONTRACT.value);
 	    auto mod = mods.find(contract.value);
 	    if (mod == mods.end()) {
 	        return std::nullopt;
@@ -271,6 +272,19 @@ namespace totems {
 	        "transfer"_n,
 	        std::make_tuple(from, to, quantity, memo)
 	    ).send();
+	}
+
+	struct [[eosio::table]] License {
+        name mod;
+        uint64_t primary_key() const { return mod.value; }
+    };
+
+	// scoped to ticker (symbol_code)
+    typedef eosio::multi_index<"licenses"_n, License> license_table;
+
+	void check_license(const symbol_code& ticker, const name& mod){
+	    license_table licenses(MARKET_CONTRACT, ticker.raw());
+	    check(licenses.find(mod.value) != licenses.end(), "Mod is not licensed for this totem: " + mod.to_string());
 	}
 
 	/***

@@ -66,6 +66,16 @@
             ]
         },
         {
+            "name": "License",
+            "base": "",
+            "fields": [
+                {
+                    "name": "mod",
+                    "type": "name"
+                }
+            ]
+        },
+        {
             "name": "Mod",
             "base": "",
             "fields": [
@@ -178,6 +188,20 @@
             ]
         },
         {
+            "name": "addlicenses",
+            "base": "",
+            "fields": [
+                {
+                    "name": "ticker",
+                    "type": "symbol_code"
+                },
+                {
+                    "name": "mods",
+                    "type": "name[]"
+                }
+            ]
+        },
+        {
             "name": "getfee",
             "base": "",
             "fields": []
@@ -271,6 +295,11 @@
     ],
     "actions": [
         {
+            "name": "addlicenses",
+            "type": "addlicenses",
+            "ricardian_contract": ""
+        },
+        {
             "name": "getfee",
             "type": "getfee",
             "ricardian_contract": ""
@@ -305,6 +334,13 @@
         {
             "name": "feeconfig",
             "type": "FeeConfig",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "licenses",
+            "type": "License",
             "index_type": "i64",
             "key_names": [],
             "key_types": []

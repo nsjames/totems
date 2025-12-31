@@ -14,6 +14,7 @@ class [[eosio::contract("market")]] market : public contract {
 
 	// Adds the `mods` table to this contract's ABI
 	typedef eosio::multi_index<"mods"_n, totems::Mod> mods_table;
+	typedef eosio::multi_index<"licenses"_n, totems::License> license_table;
 	typedef eosio::multi_index<"feeconfig"_n, shared::FeeConfig> fee_config_table;
 
 	[[eosio::action]]
@@ -55,6 +56,9 @@ class [[eosio::contract("market")]] market : public contract {
 	 */
     [[eosio::action]]
     void update(const name& contract, const uint64_t& price, const totems::ModDetails& details);
+
+    [[eosio::action]]
+    void addlicenses(const symbol_code& ticker, const std::vector<name>& mods);
 
     struct GetModsResult {
 		std::vector<totems::Mod> mods;

@@ -13,42 +13,16 @@ export const cloneTemplate = (targetPath: string) => {
 };
 
 const TEMPLATE_SYNC_FILES = [
-    "contracts/library/totems.hpp",
     "tests/helpers.ts"
 ];
 
 export const syncTemplate = async () => {
-    console.log("🔄 Fetching upstream...");
     runLive("git fetch upstream");
 
-    console.log("\n📄 Changes from upstream:\n");
-
-    let hasChanges = false;
-
-    for (const file of TEMPLATE_SYNC_FILES) {
-        const diff = run(`git diff upstream/main -- ${file}`);
-        if (diff.trim()) {
-            hasChanges = true;
-            console.log(`--- ${file} ---`);
-            console.log(diff);
-        }
-    }
-
-    if (hasChanges) {
-        const ok = await confirm("\nApply these changes?");
-        if (!ok) {
-            console.log("❌ Sync cancelled");
-            return;
-        }
-
-        const files = TEMPLATE_SYNC_FILES.join(" ");
-        console.log("\n⬇️  Applying upstream changes...");
-        runLive(`git checkout upstream/main -- ${files}`);
-    }
-
-
-
+    const files = TEMPLATE_SYNC_FILES.join(" ");
+    runLive(`git checkout upstream/main -- ${files}`);
     copyTotemsPrebuilts(process.cwd());
+    copyTotemsLibrary(process.cwd());
 
     console.log("✅ Template synced");
 };
@@ -94,7 +68,6 @@ export const copyTotemsPrebuilts = (targetPath: string) => {
     );
 
     try {
-        console.log("📦 Cloning totems repo (shallow)...");
         run(`git clone --depth=1 --filter=blob:none --no-checkout ${REPO_URL} "${tempDir}"`);
 
         run(`git sparse-checkout init --cone`, tempDir);
@@ -102,17 +75,58 @@ export const copyTotemsPrebuilts = (targetPath: string) => {
         run(`git checkout ${BRANCH}`, tempDir);
 
         fs.mkdirSync(prebuiltsDir, { recursive: true });
-
-        console.log("📂 Copying prebuilts...");
         fs.cpSync(
             path.join(tempDir, "build"),
             prebuiltsDir,
             { recursive: true }
         );
-
-        console.log("✅ Prebuilts copied");
     } finally {
-        console.log("🧹 Cleaning up temp directory...");
         fs.rmSync(tempDir, { recursive: true, force: true });
     }
 };
+
+export const copyTotemsLibrary = (targetPath: string) => {
+    const REPO_URL = "https://github.com/nsjames/totems.git";
+    const BRANCH = "main";
+
+    const targetDir = path.join(targetPath, "contracts", "library");
+    const targetFile = path.join(targetDir, "totems.hpp");
+
+    if (fs.existsSync(targetFile)) {
+        fs.rmSync(targetFile, { force: true });
+    }
+
+    const tempDir = fs.mkdtempSync(
+        path.join(os.tmpdir(), "totems-library-")
+    );
+
+    try {
+        run(
+            `git clone --depth=1 --filter=blob:none --no-checkout ${REPO_URL} "${tempDir}"`
+        );
+
+        run(`git sparse-checkout init --cone`, tempDir);
+        run(`git sparse-checkout set contracts/library`, tempDir);
+        run(`git checkout ${BRANCH}`, tempDir);
+
+        fs.mkdirSync(targetDir, { recursive: true });
+
+        const sourceFile = path.join(
+            tempDir,
+            "contracts",
+            "library",
+            "totems.hpp"
+        );
+
+        if (!fs.existsSync(sourceFile)) {
+            throw new Error("contracts/library/totems.hpp not found in repo");
+        }
+        fs.copyFileSync(sourceFile, targetFile);
+    } finally {
+        fs.rmSync(tempDir, { recursive: true, force: true });
+    }
+};
+
+
+
+
