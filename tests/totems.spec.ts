@@ -4,6 +4,7 @@ import {Asset, Checksum256} from "@wharfkit/antelope";
 import chai, { assert } from "chai";
 import {FieldType, serializeActionFields, uint8ToHex} from "../tools/serializer";
 import {Chains} from "@wharfkit/session";
+import SymbolCode = Asset.SymbolCode;
 chai.config.truncateThreshold = 0;
 const blockchain = new Blockchain();
 
@@ -756,5 +757,12 @@ describe('Totems', () => {
         assert(allModsTotem.mods.close.length === 1, "Should have 1 close mod");
         assert(allModsTotem.mods.created.length === 1, "Should have 1 created mod");
         assert(modsLength(allModsTotem) === 6, "Should have 6 total mods");
+    });
+    it('should have licenses for all published mods', async () => {
+        const licenses = JSON.parse(JSON.stringify(await market.tables.licenses(symbolCodeToBigInt(SymbolCode.from('ALLMODS'))).getTableRows()));
+        assert(licenses.length === 2, "There should be 2 licenses for ALLMODS totem");
+        assert(!!licenses.find(l => l.mod === freezer.name.toString()), "Freezer license should exist");
+        assert(!!licenses.find(l => l.mod === testmod.name.toString()), "Testmod license should exist");
+
     });
 });

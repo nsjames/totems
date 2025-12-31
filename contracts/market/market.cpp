@@ -98,7 +98,7 @@ void market::update(const name& contract, const uint64_t& price, const totems::M
 
 void market::addlicenses(const symbol_code& ticker, const std::vector<name>& mods){
 	check(
-		get_sender() != totems::TOTEMS_CONTRACT ||
+		get_sender() == totems::TOTEMS_CONTRACT ||
 		get_sender() == totems::PROXY_MOD_CONTRACT,
 		"Only the totems contract or the proxy mod contract can call addlicenses"
 	);
