@@ -284,7 +284,7 @@ namespace totems {
 
 	void check_license(const symbol_code& ticker, const name& mod){
 		{
-			license_table licenses(MARKET_CONTRACT, ticker.raw());
+			license_table licenses(TOTEMS_CONTRACT, ticker.raw());
 			if(licenses.find(mod.value) != licenses.end()) return;
 		}
 		{
