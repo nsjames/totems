@@ -2,6 +2,8 @@
 
 Totems are an experimental new chain-agnostic token standard and marketplace that allows developers to modify the behavior of tokens without having to modify the underlying code or compromise security.
 
+Want some examples of mods? [Click here.](https://github.com/nsjames/totem-mods)
+
 ## How do they work?
 
 When you create a Totem you specify an array of contract names. Those contracts are mods that are deployed to the market. Those Mods can listen for a variety of hooks and additively modify the behavior of the token.
