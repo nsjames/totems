@@ -96,24 +96,6 @@ void market::update(const name& contract, const uint64_t& price, const totems::M
 	// TODO: Not necessary for testnet launch, but will be needed for production
 }
 
-void market::addlicenses(const symbol_code& ticker, const std::vector<name>& mods){
-	check(
-		get_sender() == totems::TOTEMS_CONTRACT ||
-		get_sender() == totems::PROXY_MOD_CONTRACT,
-		"Only the totems contract or the proxy mod contract can call addlicenses"
-	);
-
-	totems::license_table licenses(get_self(), ticker.raw());
-	for(const auto& mod : mods){
-		auto it = licenses.find(mod.value);
-		if(it == licenses.end()){
-			licenses.emplace(get_self(), [&](auto& row){
-				row.mod = mod;
-			});
-		}
-	}
-}
-
 
 market::GetModsResult market::getmods(const std::vector<name>& contracts) {
 	mods_table mods(get_self(), get_self().value);

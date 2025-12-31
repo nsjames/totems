@@ -74,6 +74,16 @@
             ]
         },
         {
+            "name": "License",
+            "base": "",
+            "fields": [
+                {
+                    "name": "mod",
+                    "type": "name"
+                }
+            ]
+        },
+        {
             "name": "MintAllocation",
             "base": "",
             "fields": [
@@ -516,6 +526,13 @@
         {
             "name": "feeconfig",
             "type": "FeeConfig",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "licenses",
+            "type": "License",
             "index_type": "i64",
             "key_names": [],
             "key_types": []

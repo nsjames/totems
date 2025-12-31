@@ -21,6 +21,7 @@ class [[eosio::contract("totems")]] totemtoken : public contract {
     typedef eosio::multi_index<"totemstats"_n, totems::TotemStats> totemstats_table;
     typedef eosio::multi_index<"stat"_n, totems::TotemBackwardsCompat> stat_table;
 	typedef eosio::multi_index<"feeconfig"_n, shared::FeeConfig> fee_config_table;
+	typedef eosio::multi_index<"licenses"_n, totems::License> license_table;
 
 	[[eosio::action]]
 	void setfee(const uint64_t& amount){

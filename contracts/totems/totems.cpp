@@ -79,27 +79,28 @@ void totemtoken::create(
 	iterate_mods(mods.close, "close"_n);
 	iterate_mods(mods.created, "created"_n);
 
-	std::set<name> unique;
+	{
+		std::set<name> unique;
+        auto add = [&](const std::vector<name>& v) {
+            unique.insert(v.begin(), v.end());
+        };
 
-    auto add = [&](const std::vector<name>& v) {
-        unique.insert(v.begin(), v.end());
-    };
+        add(mods.transfer);
+        add(mods.mint);
+        add(mods.burn);
+        add(mods.open);
+        add(mods.close);
+        add(mods.created);
 
-    add(mods.transfer);
-    add(mods.mint);
-    add(mods.burn);
-    add(mods.open);
-    add(mods.close);
-    add(mods.created);
+        std::vector<name> all_mods(unique.begin(), unique.end());
 
-    std::vector<name> all_mods(unique.begin(), unique.end());
-
-	action(
-       permission_level{get_self(), "active"_n},
-       totems::MARKET_CONTRACT,
-       "addlicenses"_n,
-       std::make_tuple(ticker.code(), all_mods)
-    ).send();
+        totems::license_table licenses(get_self(), ticker.code().raw());
+        for(const auto& mod : all_mods){
+            licenses.emplace(get_self(), [&](auto& row){
+                row.mod = mod;
+            });
+        }
+	}
 
 
 

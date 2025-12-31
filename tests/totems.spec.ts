@@ -759,7 +759,7 @@ describe('Totems', () => {
         assert(modsLength(allModsTotem) === 6, "Should have 6 total mods");
     });
     it('should have licenses for all published mods', async () => {
-        const licenses = JSON.parse(JSON.stringify(await market.tables.licenses(symbolCodeToBigInt(SymbolCode.from('ALLMODS'))).getTableRows()));
+        const licenses = JSON.parse(JSON.stringify(await contract.tables.licenses(symbolCodeToBigInt(SymbolCode.from('ALLMODS'))).getTableRows()));
         assert(licenses.length === 2, "There should be 2 licenses for ALLMODS totem");
         assert(!!licenses.find(l => l.mod === freezer.name.toString()), "Freezer license should exist");
         assert(!!licenses.find(l => l.mod === testmod.name.toString()), "Testmod license should exist");

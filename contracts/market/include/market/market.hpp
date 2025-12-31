@@ -14,7 +14,6 @@ class [[eosio::contract("market")]] market : public contract {
 
 	// Adds the `mods` table to this contract's ABI
 	typedef eosio::multi_index<"mods"_n, totems::Mod> mods_table;
-	typedef eosio::multi_index<"licenses"_n, totems::License> license_table;
 	typedef eosio::multi_index<"feeconfig"_n, shared::FeeConfig> fee_config_table;
 
 	[[eosio::action]]
