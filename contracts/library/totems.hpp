@@ -288,8 +288,10 @@ namespace totems {
 			if(licenses.find(mod.value) != licenses.end()) return;
 		}
 		{
-			license_table licenses(PROXY_MOD_CONTRACT, ticker.raw());
-			if(licenses.find(mod.value) != licenses.end()) return;
+			if(is_account(PROXY_MOD_CONTRACT)){
+				license_table licenses(PROXY_MOD_CONTRACT, ticker.raw());
+				if(licenses.find(mod.value) != licenses.end()) return;
+			}
 		}
 
 		check(false, "Mod is not licensed for this totem: " + mod.to_string());
